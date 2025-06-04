@@ -23,7 +23,7 @@ export function setupServer() {
   console.log('test5');
   app.use(errorHandler);
   app.use(notFoundHandler);
-  // app.use('*', notFoundHandler);
+  
   console.log('test6');
   // Визначення порту
   const PORT = process.env.PORT || 3000;

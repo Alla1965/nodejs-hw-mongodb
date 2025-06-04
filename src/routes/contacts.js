@@ -13,10 +13,10 @@ import {
 const router = Router();
 console.log('test1');
 
-// router.get('/', ctrlWrapper(getContactsController));
-// console.log('test2');
-// router.get('/:contactId', ctrlWrapper(getContactByIdController));
-// console.log('test3');
+router.get('/', ctrlWrapper(getContactsController));
+console.log('test2');
+router.get('/:contactId', ctrlWrapper(getContactByIdController));
+console.log('test3');
 router.post('/', ctrlWrapper(createContactController));
 console.log('test4');
 router.patch('/:contactId', ctrlWrapper(updateContactByIdController));
