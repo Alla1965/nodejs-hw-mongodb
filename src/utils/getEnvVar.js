@@ -4,7 +4,6 @@ dotenv.config();
 
 export function getEnvVar(name, defaultValue) {
   const value = process.env[name];
-  console.log(name);
 
   if (value) return value;
 

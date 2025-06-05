@@ -25,10 +25,10 @@ export const getContactByIdController = async (req, res, next) => {
   const contact = await getContactById(contactId);
 
   if (!contact) {
-    next(new Error(404, 'Contact not found'));
+    next(createHttpError(404, 'Contact not found'));
     return;
   }
-  // Відповідь, якщо контакт знайдено
+
   res.json({
     status: 200,
     message: `Successfully found contact with id ${contactId}!`,
@@ -82,7 +82,7 @@ export const deleteContactByIdController = async (req, res, next) => {
       throw createHttpError(404, 'Contact not found');
     }
 
-    res.status(204).send(); //  Без тіла відповіді
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
