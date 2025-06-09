@@ -1,12 +1,12 @@
 import Joi from 'joi';
-const baseString = Joi.string().min(3).max(20);
+const str = Joi.string().min(3).max(20).messages({
+  'string.min': 'має бути мінімум 3 символи',
+  'string.max': 'не більше 20 символів',
+});
 
 export const createContactSchema = Joi.object({
-  name: Joi.string().min(3).max(20).required().messages({
-    'string.base': 'Імʼя повинно бути текстом',
-    'string.min': 'Імʼя має містити щонайменше 3 символи',
-    'string.max': 'Імʼя не повинно перевищувати 20 символів',
-    'any.required': 'Поле "name" обовʼязкове',
+  name: str.required().messages({
+    'any.required': 'Поле name обов’язкове',
   }),
 
   phoneNumber: Joi.string()
@@ -29,7 +29,7 @@ export const createContactSchema = Joi.object({
   }),
 
   contactType: Joi.string()
-    .valid('personal', 'work', 'family', 'other')
+    .valid('personal', 'work', 'family')
     .required()
     .messages({
       'any.only': 'Тип контакту має бути один з: personal, work, family, other',
@@ -46,8 +46,11 @@ export const createContactSchema = Joi.object({
     'any.required': 'Поле "updatedAt" обовʼязкове',
   }),
 });
-export const updateContactSchema = Joi.object({
-  name: baseString.optional(),
-  phoneNumber: baseString.optional(),
-  contactType: baseString.optional().valid('friend', 'family', 'work', 'other'),
-}).min(1);
+export const updateContactSchema = createContactSchema
+  .fork(['name', 'phoneNumber', 'email', 'contactType', 'isFavourite'], (x) =>
+    x.optional(),
+  )
+  .min(1)
+  .messages({
+    'object.min': 'Повинно бути принаймні одне поле для оновлення',
+  });
