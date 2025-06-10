@@ -29,10 +29,10 @@ export const createContactSchema = Joi.object({
   }),
 
   contactType: Joi.string()
-    .valid('personal', 'work', 'family')
+    .valid('personal', 'work', 'home')
     .required()
     .messages({
-      'any.only': 'Тип контакту має бути один з: personal, work, family, other',
+      'any.only': 'Тип контакту має бути один з: personal, work, home',
       'any.required': 'Поле "contactType" обовʼязкове',
     }),
 
