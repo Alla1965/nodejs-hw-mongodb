@@ -1,4 +1,5 @@
 import Joi from 'joi';
+
 const str = Joi.string().min(3).max(20).messages({
   'string.min': 'має бути мінімум 3 символи',
   'string.max': 'не більше 20 символів',
@@ -6,7 +7,7 @@ const str = Joi.string().min(3).max(20).messages({
 
 export const createContactSchema = Joi.object({
   name: str.required().messages({
-    'any.required': 'Поле name обов’язкове',
+    'any.required': 'Поле name обовʼязкове',
   }),
 
   phoneNumber: Joi.string()
@@ -36,21 +37,47 @@ export const createContactSchema = Joi.object({
       'any.required': 'Поле "contactType" обовʼязкове',
     }),
 
-  createdAt: Joi.date().iso().required().messages({
-    'date.base': 'Поле "createdAt" повинно бути датою у форматі ISO',
-    'any.required': 'Поле "createdAt" обовʼязкове',
-  }),
+  // createdAt: Joi.date().iso().required().messages({
+  //   'date.base': 'Поле "createdAt" повинно бути датою у форматі ISO',
+  //   'any.required': 'Поле "createdAt" обовʼязкове',
+  // }),
 
-  updatedAt: Joi.date().iso().required().messages({
-    'date.base': 'Поле "updatedAt" повинно бути датою у форматі ISO',
-    'any.required': 'Поле "updatedAt" обовʼязкове',
-  }),
+  // updatedAt: Joi.date().iso().required().messages({
+  //   'date.base': 'Поле "updatedAt" повинно бути датою у форматі ISO',
+  //   'any.required': 'Поле "updatedAt" обовʼязкове',
+  // }),
 });
-export const updateContactSchema = createContactSchema
-  .fork(['name', 'phoneNumber', 'email', 'contactType', 'isFavourite'], (x) =>
-    x.optional(),
-  )
+// export const updateContactSchema = createContactSchema
+//   .fork(['name', 'phoneNumber', 'email', 'contactType', 'isFavourite'], (x) =>
+//     x.optional(),
+//   )
+//   .min(1)
+//   .messages({
+//     'object.min': 'Повинно бути принаймні одне поле для оновлення',
+//   });
+export const updateContactSchema = Joi.object({
+  name: str.optional(),
+  phoneNumber: Joi.string()
+    .pattern(/^\+380\d{9}$/)
+    .optional()
+    .messages({
+      'string.pattern.base':
+        'Номер телефону повинен бути у форматі +380XXXXXXXXX',
+    }),
+  email: Joi.string().email().optional().messages({
+    'string.email': 'Email повинен бути дійсною адресою',
+  }),
+  isFavourite: Joi.boolean().optional().messages({
+    'boolean.base': 'Поле isFavourite повинно бути true або false',
+  }),
+  contactType: Joi.string()
+    .valid('personal', 'work', 'home')
+    .optional()
+    .messages({
+      'any.only': 'Тип контакту має бути один з: personal, work, home',
+    }),
+})
   .min(1)
   .messages({
-    'object.min': 'Повинно бути принаймні одне поле для оновлення',
+    'object.min': 'Мінімум одне поле обовʼязкове для оновлення',
   });
