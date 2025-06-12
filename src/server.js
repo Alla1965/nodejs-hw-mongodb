@@ -2,7 +2,8 @@
 import express from 'express';
 import cors from 'cors';
 import pinoHttp from 'pino-http';
-import contactsRouter from './routes/contacts.js';
+import router from './routers/index.js';
+
 import notFoundHandler from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -16,7 +17,7 @@ export function setupServer() {
   app.use(pinoHttp());
   app.use(express.json());
 
-  app.use('/contacts', contactsRouter);
+  app.use('/contacts', router);
 
   app.use(errorHandler);
   app.use(notFoundHandler);
