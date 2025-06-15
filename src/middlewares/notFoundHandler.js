@@ -1,7 +1,7 @@
 // src/middlewares/notFoundHandler.js
 import createHttpError from 'http-errors';
 
-const notFoundHandler = (req, res, next) => {
+export default function notFoundHandler(req, res, next) {
+  console.log(`❌ Route not found: ${req.method} ${req.originalUrl}`);
   next(createHttpError(404, 'Route not found'));
-};
-export default notFoundHandler;
+}

@@ -8,7 +8,6 @@ import { SessionsCollection } from '../db/models/session.js';
 export const registerUser = async ({ name, email, password }) => {
   const existingUser = await UsersCollection.findOne({ email });
   if (existingUser) throw createHttpError(409, 'Email in use');
-
   const encryptedPassword = await bcrypt.hash(password, 10);
   const newUser = await UsersCollection.create({
     name,
@@ -21,7 +20,7 @@ export const registerUser = async ({ name, email, password }) => {
   return userObj;
 };
 
-export const loginUser = async (email, password) => {
+export const loginUser = async ({ email, password }) => {
   const user = await UsersCollection.findOne({ email });
   if (!user) {
     throw createHttpError(401, 'User not found');
@@ -68,11 +67,17 @@ export const refreshSession = async (refreshToken) => {
   return { accessToken: newAccessToken };
 };
 export const logoutUser = async (refreshToken) => {
-  const session = await SessionsCollection.findOne({ refreshToken });
+  if (!refreshToken) {
+    throw createHttpError(400, 'Refresh token is required');
+  }
+  const session = await SessionsCollection.findOne({
+    refreshToken,
+  });
 
   if (!session) {
     throw createHttpError(404, 'Session not found');
   }
 
   await SessionsCollection.deleteOne({ _id: session._id });
+  return { message: 'Logout successful' };
 };

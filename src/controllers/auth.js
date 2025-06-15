@@ -6,7 +6,7 @@ import { logoutUser } from '../services/auth.js';
 
 export const registerUserController = async (req, res) => {
   const { name, email, password } = req.body;
-  const user = await registerUser(name, email, password);
+  const user = await registerUser({ name, email, password });
 
   res.status(201).json({
     status: 'success',
@@ -57,13 +57,14 @@ export const refreshSessionController = async (req, res) => {
   });
 };
 export const logoutUserController = async (req, res) => {
-  const refreshToken = req.cookies?.refreshToken;
+  
+  const { refreshToken } = req.cookies;
 
   if (!refreshToken) {
     throw createHttpError(400, 'No refresh token provided');
   }
-
-  await logoutUser(refreshToken);
+  const decodedToken = decodeURIComponent(refreshToken);
+    await logoutUser(decodedToken);
 
   res.clearCookie('refreshToken');
   res.status(204).send();
