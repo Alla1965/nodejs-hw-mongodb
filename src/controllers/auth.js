@@ -32,6 +32,12 @@ export const loginUserController = async (req, res) => {
       sameSite: 'strict',
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 днів
     })
+    .cookie('accessToken', session.accessToken, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15 хвилин
+    })
     .status(200)
     .json({
       status: 'success',
@@ -57,14 +63,13 @@ export const refreshSessionController = async (req, res) => {
   });
 };
 export const logoutUserController = async (req, res) => {
-  
   const { refreshToken } = req.cookies;
 
   if (!refreshToken) {
     throw createHttpError(400, 'No refresh token provided');
   }
   const decodedToken = decodeURIComponent(refreshToken);
-    await logoutUser(decodedToken);
+  await logoutUser(decodedToken);
 
   res.clearCookie('refreshToken');
   res.status(204).send();
