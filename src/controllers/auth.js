@@ -19,8 +19,6 @@ export const registerUserController = async (req, res) => {
   });
 };
 export const loginUserController = async (req, res) => {
-  await loginUser(req.body);
-
   const { email, password } = req.body;
 
   const session = await loginUser({ email, password });
@@ -48,19 +46,34 @@ export const loginUserController = async (req, res) => {
     });
 };
 export const refreshSessionController = async (req, res) => {
-  const refreshToken = req.cookies?.refreshToken;
+  const oldrefreshToken = req.cookies?.refreshToken;
 
-  if (!refreshToken) {
+  if (!oldrefreshToken) {
     throw createHttpError(401, 'No refresh token provided');
   }
 
-  const { accessToken } = await refreshSession(refreshToken);
-
-  res.status(200).json({
-    status: 'success',
-    message: 'Successfully refreshed a session!',
-    data: { accessToken },
-  });
+  const session = await refreshSession(oldrefreshToken);
+  res
+    .cookie('refreshToken', session.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    })
+    .cookie('accessToken', session.accessToken, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
+    })
+    .status(200)
+    .json({
+      status: 'success',
+      message: 'Successfully refreshed a session!',
+      data: {
+        accessToken: session.accessToken,
+      },
+    });
 };
 export const logoutUserController = async (req, res) => {
   const { refreshToken } = req.cookies;

@@ -36,25 +36,8 @@ export const createContactSchema = Joi.object({
       'any.only': 'Тип контакту має бути один з: personal, work, home',
       'any.required': 'Поле "contactType" обовʼязкове',
     }),
-
-  // createdAt: Joi.date().iso().required().messages({
-  //   'date.base': 'Поле "createdAt" повинно бути датою у форматі ISO',
-  //   'any.required': 'Поле "createdAt" обовʼязкове',
-  // }),
-
-  // updatedAt: Joi.date().iso().required().messages({
-  //   'date.base': 'Поле "updatedAt" повинно бути датою у форматі ISO',
-  //   'any.required': 'Поле "updatedAt" обовʼязкове',
-  // }),
 });
-// export const updateContactSchema = createContactSchema
-//   .fork(['name', 'phoneNumber', 'email', 'contactType', 'isFavourite'], (x) =>
-//     x.optional(),
-//   )
-//   .min(1)
-//   .messages({
-//     'object.min': 'Повинно бути принаймні одне поле для оновлення',
-//   });
+
 export const updateContactSchema = Joi.object({
   name: str.optional(),
   phoneNumber: Joi.string()

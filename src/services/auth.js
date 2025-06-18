@@ -64,7 +64,10 @@ export const refreshSession = async (refreshToken) => {
     refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
   });
 
-  return { accessToken: newAccessToken };
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+  };
 };
 export const logoutUser = async (refreshToken) => {
   if (!refreshToken) {

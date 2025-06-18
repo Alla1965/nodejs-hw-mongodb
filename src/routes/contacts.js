@@ -14,7 +14,6 @@ import {
   updateContactByIdController,
   deleteContactByIdController,
 } from '../controllers/contacts.js';
-// import router from './routes/index.js';
 
 const router = Router();
 router.use(authenticate);
