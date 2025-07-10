@@ -1,4 +1,4 @@
-// src/middlewares/notFoundHandler.js
+
 import createHttpError from 'http-errors';
 
 export default function notFoundHandler(req, res, next) {

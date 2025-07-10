@@ -8,6 +8,9 @@ import {
   updateContactById,
   deleteContactById,
 } from '../services/contacts.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const getContactsController = async (req, res, next) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -51,13 +54,15 @@ export const createContactController = async (req, res) => {
   const { name, phoneNumber, contactType } = req.body;
 
   if (!name || !phoneNumber || !contactType) {
-    throw createHttpError(
-      400,
-      'Missing required fields: name, phoneNumber, contactType',
-    );
+    throw createHttpError(400, 'Missing required fields: name, phoneNumber');
   }
-
-  const contact = await createContact({ ...req.body, userId: req.user._id });
+  // const photo = req.file ? req.file.path : null;
+  const photo = req.file ? await saveFileToCloudinary(req.file) : null;
+  const contact = await createContact({
+    ...req.body,
+    userId: req.user._id,
+    photo,
+  });
 
   res.status(201).json({
     status: 201,
@@ -68,27 +73,38 @@ export const createContactController = async (req, res) => {
 export const updateContactByIdController = async (req, res, next) => {
   try {
     const { contactId } = req.params;
-    const updateData = req.body;
-    const userId = req.user._id;
-    const updatedContact = await updateContactById(
-      contactId,
-      userId,
-      updateData,
-    );
-
-    if (!updatedContact) {
-      throw createHttpError(404, 'Contact not found');
+    const photo = req.file;
+    let photoUrl;
+    if (photo) {
+      if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+        photoUrl = await saveFileToCloudinary(photo);
+      } else {
+        photoUrl = await saveFileToUploadDir(photo);
+      }
     }
 
-    res.status(200).json({
+    const updateData = {
+      ...req.body,
+      ...(photoUrl && { photo: photoUrl }),
+    };
+    const userId = req.user._id;
+    const result = await updateContactById(contactId, userId, updateData);
+
+    if (!result) {
+      next(createHttpError(404, 'Contact not found'));
+      return;
+    }
+
+    res.json({
       status: 200,
-      message: 'Successfully patched a contact!',
-      data: updatedContact,
+      message: `Successfully patched a contact!`,
+      data: result.contact,
     });
   } catch (err) {
     next(err);
   }
 };
+
 export const deleteContactByIdController = async (req, res, next) => {
   try {
     const { contactId } = req.params;

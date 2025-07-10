@@ -6,10 +6,7 @@ const str = Joi.string().min(3).max(20).messages({
 });
 
 export const createContactSchema = Joi.object({
-  name: str.required().messages({
-    'any.required': 'Поле name обовʼязкове',
-  }),
-
+  name: Joi.string().required(),
   phoneNumber: Joi.string()
     .pattern(/^\+380\d{9}$/)
     .required()
@@ -18,17 +15,14 @@ export const createContactSchema = Joi.object({
         'Номер телефону повинен бути у форматі +380XXXXXXXXX',
       'any.required': 'Поле "phoneNumber" обовʼязкове',
     }),
-
   email: Joi.string().email().required().messages({
     'string.email': 'Email повинен бути дійсною адресою',
-    'any.required': 'Поле "email" обовʼязкове',
+    'any.empty': 'Поле "email" обовʼязкове',
   }),
-
   isFavourite: Joi.boolean().required().messages({
     'boolean.base': 'Поле "isFavourite" повинно бути true або false',
     'any.required': 'Поле "isFavourite" обовʼязкове',
   }),
-
   contactType: Joi.string()
     .valid('personal', 'work', 'home')
     .required()
@@ -39,7 +33,7 @@ export const createContactSchema = Joi.object({
 });
 
 export const updateContactSchema = Joi.object({
-  name: str.optional(),
+  name: Joi.string(),
   phoneNumber: Joi.string()
     .pattern(/^\+380\d{9}$/)
     .optional()

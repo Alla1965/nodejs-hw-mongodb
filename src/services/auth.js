@@ -4,6 +4,8 @@ import createHttpError from 'http-errors';
 import { UsersCollection } from '../db/models/user.js';
 import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/index.js';
 import { SessionsCollection } from '../db/models/session.js';
+import jwt from 'jsonwebtoken';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const registerUser = async ({ name, email, password }) => {
   const existingUser = await UsersCollection.findOne({ email });
@@ -83,4 +85,18 @@ export const logoutUser = async (refreshToken) => {
 
   await SessionsCollection.deleteOne({ _id: session._id });
   return { message: 'Logout successful' };
+};
+
+export const findUserByEmail = async (email) => {
+  return await UsersCollection.findOne({ email });
+};
+export const generateResetToken = (user) => {
+  return jwt.sign(
+    {
+      sub: user._id,
+      email: user.email,
+    },
+    getEnvVar('JWT_SECRET'),
+    { expiresIn: '15m' },
+  );
 };

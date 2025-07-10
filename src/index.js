@@ -1,13 +1,14 @@
 import { initMongoConnection } from './db/initMongoConnection.js';
 import { setupServer } from './server.js';
 
-(async () => {
-  try {
-    await initMongoConnection(); // чекаємо з'єднання
+import { createDirIfNotExists } from './utils/createDirIfNotExists.js';
+import { TEMP_UPLOAD_DIR, UPLOAD_DIR } from './constants/index.js';
 
-    setupServer(); // запускаємо сервер
-  } catch (error) {
-    console.error(' Помилка підключення до бази:', error.message);
-    process.exit(1);
-  }
-})();
+const bootstrap = async () => {
+  await initMongoConnection();
+  await createDirIfNotExists(TEMP_UPLOAD_DIR);
+  await createDirIfNotExists(UPLOAD_DIR);
+  setupServer();
+};
+
+void bootstrap();

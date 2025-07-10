@@ -1,5 +1,3 @@
-// src/middlewares/authenticate.js
-
 import createHttpError from 'http-errors';
 
 import { SessionsCollection } from '../db/models/session.js';
@@ -7,7 +5,7 @@ import { UsersCollection } from '../db/models/user.js';
 
 export const authenticate = async (req, res, next) => {
   const authHeader = req.get('Authorization');
-
+  console.log('Received Authorization:', authHeader);
   if (!authHeader) {
     next(createHttpError(401, 'Please provide Authorization header'));
     return;
@@ -42,7 +40,10 @@ export const authenticate = async (req, res, next) => {
     return;
   }
 
-  req.user = user;
-
+  req.user = {
+    _id: user._id,
+    email: user.email,
+    role: user.role,
+  };
   next();
 };
